@@ -1926,7 +1926,7 @@
           <div class="vm-toggle-row">
             <div class="vm-toggle-label">
               🚫 禁用视觉模式
-              <small>加密字体页面不截图发视觉AI（直接文本模式，部分文字缺失）</small>
+              <small>关闭后走纯文本模式（费用低但正确率下降，公式/表格/加密字体可能丢失）</small>
             </div>
             <label class="ykt-toggle"><input type="checkbox" id="vm-feat-skipvision"><span class="ykt-slider"></span></label>
           </div>
