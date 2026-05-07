@@ -1,46 +1,41 @@
 # 🍋 YuketangHelper
 
-雨课堂辅助工具 · AI 答题 / 自动刷课 / 讨论助手
+> 雨课堂，但是帮你上。
 
-[![License](https://img.shields.io/badge/license-GPL3-blue)](LICENSE)
-[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-5.0-orange)](https://www.tampermonkey.net/)
+写这个东西的初衷很简单——课太多，懒得看。后来发现不只是视频烦人，作业和讨论题也烦人，索性一起收拾了。
 
-## 功能
+---
 
-- **AI 自动答题** — 选择题 / 多选题 / 判断题 / 填空题 / 主观题
-- **自动刷课** — 视频 / 课件 / 讨论 / 作业
-- **加密字体绕过** — 截图 + 视觉 AI 识别
-- **反检测** — 模拟人类操作（鼠标轨迹、打字节奏）
-- **评论区检测** — 视频页自动识别评论区并发送
+## 能干什么
 
-## 安装
+答题。不管是单选多选判断填空还是主观题，扔给 AI，自动选、自动填、自动提交。遇到加密字体也不怕，截图发视觉模型绕过去。
 
-1. 安装 [Tampermonkey](https://www.tampermonkey.net/) 浏览器扩展
-2. [点击安装脚本](https://raw.githubusercontent.com/你的用户名/yuketang-helper/main/yuketang-helper.user.js)
-3. 打开 [雨课堂](https://www.yuketang.cn/) 任意课程页，右上角出现 🍋 悬浮球
+刷课。视频自动播、PPT 自动翻、课件自动翻完就跑。有评论区的地方先发句"已看"再播视频，刷完一个接下一个，直到全部绿灯。
 
-## AI 配置
+反检测。鼠标不是你硬晃的，是模拟人手的贝塞尔曲线；打字不是瞬间填满的，是逐字敲进去的。页面失焦检测？拦掉了。
 
-1. 打开 [阿里云 DashScope 控制台](https://dashscope.console.aliyun.com/apiKey)
-2. 创建 API Key，开通 `qwen-plus` 和 `qwen-vl-plus` 模型
-3. 在脚本设置面板填入 API Key，保存
+---
 
-> **费用**：`qwen-plus` 新用户有免费额度，`qwen-vl-plus` 按调用计费。关闭「AI 自动答题」可纯手动使用。
+## 怎么装
 
-## 使用
+装个 [Tampermonkey](https://www.tampermonkey.net/)，然后点[这里安装脚本](https://raw.githubusercontent.com/murasamekksk/yuketang-helper/master/yuketang-helper.user.js)。
 
-| 按钮 | 功能 |
-|------|------|
-| ▶ 开始刷课 | 自动遍历课程列表完成所有内容 |
-| 📍 处理当前页 | 识别当前页面类型并自动处理 |
-| ⏸ 暂停 | 暂停/继续当前任务 |
+打开雨课堂任意课程页，右上角会冒出来一个 🍋，点它就是。
 
-答题页面会自动识别题型并请求 AI 生成答案。
+---
 
-## 免责声明
+## AI 怎么配
 
-本工具仅供学习研究使用，请勿用于违反平台规定的用途。
+用的是阿里云的模型，得先去 [DashScope](https://dashscope.console.aliyun.com/apiKey) 搞个 API Key。文本用 `qwen-plus`，视觉用 `qwen-vl-plus`，新号都有免费额度，够用了。
 
-## License
+拿到 Key 之后在脚本的设置面板里填进去，保存，完事。
 
-GPL-3.0
+> 不放心 AI 答案的话别开「AI 自动答题」，手动点「获取AI答案」自己判断。视觉模型一次几分钱，不算贵但也不是免费的，心里有数就行。
+
+---
+
+## 大概就这样
+
+这玩意就是用来自用的，顺便开源给有缘人。有 bug 提 issue，想改的自己 fork。
+
+别拿去卖，别拿去搞事情。GPL-3.0，你懂的。
