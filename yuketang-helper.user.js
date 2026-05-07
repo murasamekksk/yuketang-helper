@@ -507,14 +507,16 @@
     },
 
     async selectAndSubmit(aiText, container, log) {
-      const m = aiText.match(/[ABCDEF]+|[对错正确错误]/);
-      if (!m) { log('⚠️ 无法解析AI答案: ' + aiText); return false; }
-      const answer = m[0].toUpperCase();
-      log(`🤖 AI答案: ${answer}`);
-      if (['对','错','正确','错误'].includes(answer)) {
-        return await this._clickOption(container, [(answer === '对' || answer === '正确') ? 0 : 1], log);
+      const judgeM = aiText.match(/[对错正确错误]/);
+      if (judgeM) {
+        const a = judgeM[0];
+        log(`🤖 AI答案: ${a}`);
+        return await this._clickOption(container, [(a === '对' || a === '正确') ? 0 : 1], log);
       }
-      const indices = [...answer].map(c => c.charCodeAt(0) - 65).filter(i => i >= 0 && i <= 5);
+      const letters = aiText.replace(/[^A-Ga-g]/g, '').toUpperCase();
+      if (!letters) { log('⚠️ 无法解析AI答案: ' + aiText); return false; }
+      log(`🤖 AI答案: ${letters}`);
+      const indices = [...letters].map(c => c.charCodeAt(0) - 65).filter(i => i >= 0 && i <= 6);
       return await this._clickOption(container, indices, log);
     },
 
@@ -525,6 +527,10 @@
       if (!items.length) { log('⚠️ 选项为空'); return false; }
       for (const idx of indices) {
         const item = items[idx]; if (!item) continue;
+        if (item.classList.contains('is-disabled') || item.querySelector('input:disabled')) {
+          log(`⚠️ 选项${String.fromCharCode(65+idx)}已被禁用，跳过`);
+          continue;
+        }
         item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         await randSleep(200, 300);
         await humanClick(item);
@@ -539,15 +545,16 @@
 
     // 专门针对作业页面的选项点击（label.el-radio / el-checkbox 结构）
     async selectAndSubmitHomework(aiText, container, log) {
-      const m = aiText.match(/[ABCDEFG]+|[对错正确错误]/);
-      if (!m) { log('⚠️ 无法解析AI答案: ' + aiText); return false; }
-      const answer = m[0].toUpperCase();
-      log(`🤖 AI答案: ${answer}`);
-
-      if (['对','错','正确','错误'].includes(answer)) {
-        return await this._clickHomeworkOption(container, [(answer === '对' || answer === '正确') ? 0 : 1], log);
+      const judgeM = aiText.match(/[对错正确错误]/);
+      if (judgeM) {
+        const a = judgeM[0];
+        log(`🤖 AI答案: ${a}`);
+        return await this._clickHomeworkOption(container, [(a === '对' || a === '正确') ? 0 : 1], log);
       }
-      const indices = [...answer].map(c => c.charCodeAt(0) - 65).filter(i => i >= 0 && i <= 6);
+      const letters = aiText.replace(/[^A-Ga-g]/g, '').toUpperCase();
+      if (!letters) { log('⚠️ 无法解析AI答案: ' + aiText); return false; }
+      log(`🤖 AI答案: ${letters}`);
+      const indices = [...letters].map(c => c.charCodeAt(0) - 65).filter(i => i >= 0 && i <= 6);
       return await this._clickHomeworkOption(container, indices, log);
     },
 
@@ -578,6 +585,10 @@
       for (const idx of indices) {
         const label = labels[idx];
         if (!label) { log(`⚠️ 选项${idx}不存在`); continue; }
+        if (label.classList.contains('is-disabled') || label.querySelector('input:disabled')) {
+          log(`⚠️ 选项${String.fromCharCode(65+idx)}已被禁用，跳过`);
+          continue;
+        }
 
         label.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         await randSleep(80, 120);
