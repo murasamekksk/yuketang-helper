@@ -368,20 +368,20 @@
           systemMsg = '你是专业答题助手。简答题请给出简明扼要的回答，100-200字，不要废话。';
           userMsg = `简答题：\n${questionText}`;
         } else if (questionType === 'multi') {
-          systemMsg = '这是多选题。注意：题干文字可能因网页加密而部分缺失，请综合题干残留信息和选项内容判断，输出所有正确选项的字母（如"ABC"），绝对不能只输出一个字母，禁止任何解释。';
+          systemMsg = '这是多选题。选项范围可能为A-G，请综合题干和所有选项内容判断，输出所有正确选项的字母连写（如"ABD"或"ACDG"），绝对不能只输出一个字母，禁止空格、禁止解释、禁止输出选项文字。';
           userMsg = `${questionText}`;
         } else if (questionType === 'judge') {
           systemMsg = '这是判断题。注意：题干文字可能因网页加密而部分缺失，请根据题干残留的关键词和语义判断正误。只输出"对"或"错"，禁止任何解释。';
           userMsg = `${questionText}`;
         } else {
-          systemMsg = '这是单选题。注意：题干文字可能因网页加密而部分缺失，请综合题干残留信息和各选项内容进行判断，不要被残缺的题干误导。只输出一个字母（如"A"），禁止任何解释。';
+          systemMsg = '这是单选题。选项范围可能为A-G。注意：题干文字可能因网页加密而部分缺失，请综合题干残留信息和各选项内容判断，不要被残缺的题干误导。只输出一个字母（A-G），禁止任何解释、禁止输出选项文字。';
           userMsg = `${questionText}`;
         }
 
         // ── 构建文本请求（自动检测 API 格式）──
         const mkTextReq = (url, model) => {
           const isDashTxt = url.toLowerCase().includes('dashscope.aliyuncs.com') && !url.toLowerCase().includes('compatible-mode');
-          const maxTok = questionType === 'discuss' ? 300 : (questionType === 'essay' ? 400 : (questionType === 'multi' ? 20 : 10));
+          const maxTok = questionType === 'discuss' ? 300 : (questionType === 'essay' ? 400 : (questionType === 'multi' ? 40 : 15));
           if (isDashTxt) {
             return {
               url, model,
@@ -441,7 +441,7 @@
                 { inlineData: { mimeType: 'image/png', data: base64 } },
               ],
             }],
-            generationConfig: { temperature: 0, maxOutputTokens: questionType === 'multi' ? 20 : 400 },
+            generationConfig: { temperature: 0, maxOutputTokens: questionType === 'multi' ? 40 : 400 },
           });
           parseFn = (json) => json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
         } else {
@@ -455,7 +455,7 @@
               { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
             ]},
           ];
-          body = JSON.stringify({ model, stream: false, temperature: 0.0, max_tokens: questionType === 'discuss' ? 300 : (questionType === 'essay' ? 400 : (questionType === 'multi' ? 20 : 10)), messages });
+          body = JSON.stringify({ model, stream: false, temperature: 0.0, max_tokens: questionType === 'discuss' ? 300 : (questionType === 'essay' ? 400 : (questionType === 'multi' ? 40 : 15)), messages });
           parseFn = (json) => json.choices?.[0]?.message?.content?.trim() || '';
         }
 
