@@ -368,13 +368,13 @@
           systemMsg = '你是专业答题助手。简答题请给出简明扼要的回答，100-200字，不要废话。';
           userMsg = `简答题：\n${questionText}`;
         } else if (questionType === 'multi') {
-          systemMsg = '这是多选题。选项范围可能为A-G，请综合题干和所有选项内容判断，输出所有正确选项的字母连写（如"ABD"或"ACDG"），绝对不能只输出一个字母，禁止空格、禁止解释、禁止输出选项文字。';
+          systemMsg = '你正在参加一场涵盖多学科（医学/生物/数学/人文/社会等）的大学课程测验。这是一道多选题，选项范围可能为A-G。请独立分析每个选项，得出最终答案。只输出正确选项的字母连写（如"ABD"或"ACDG"），禁止空格、禁止解释、禁止输出选项文字。';
           userMsg = `${questionText}`;
         } else if (questionType === 'judge') {
-          systemMsg = '这是判断题。注意：题干文字可能因网页加密而部分缺失，请根据题干残留的关键词和语义判断正误。只输出"对"或"错"，禁止任何解释。';
+          systemMsg = '你正在参加一场涵盖多学科（医学/生物/数学/人文/社会等）的大学课程测验。这是一道判断题。请理解题干的核心命题，注意绝对化表述通常是错的，相对表述通常是对的。只输出"对"或"错"，禁止任何解释。';
           userMsg = `${questionText}`;
         } else {
-          systemMsg = '这是单选题。选项范围可能为A-G。注意：题干文字可能因网页加密而部分缺失，请综合题干残留信息和各选项内容判断，不要被残缺的题干误导。只输出一个字母（A-G），禁止任何解释、禁止输出选项文字。';
+          systemMsg = '你正在参加一场涵盖多学科（医学/生物/数学/人文/社会等）的大学课程测验。这是一道单选题，选项范围可能为A-G。请分析每个选项的正误，选出唯一正确答案。只输出一个字母（A-G），禁止任何解释、禁止输出选项文字。';
           userMsg = `${questionText}`;
         }
 
@@ -960,20 +960,13 @@
     try {
       const aiType = qType === 'judge' ? 'judge' : qType;
 
-      // 有加密码点 → 直接用 html2canvas 截图发给视觉 AI（文字解密不可靠）
+      // 优先视觉模式：截图发给视觉 AI，保留完整题目（公式/表格/加密字体都不丢）
       const feat = Store.getFeature();
-      const hasEncSpans = itemBody.querySelector('.xuetangx-com-encrypted-font');
       let imageDataUrl = null;
-      if (hasEncSpans && typeof html2canvas !== 'undefined' && !feat.skipVision) {
-        log('检测到加密字体，截图发给视觉AI...');
+      if (typeof html2canvas !== 'undefined' && !feat.skipVision) {
         imageDataUrl = await AI.captureQuestionImage(itemBody);
-        if (imageDataUrl) {
-          log('已截取题目图片');
-        } else {
-          log('截图失败，回退到纯文本模式');
-        }
-      } else if (hasEncSpans && feat.skipVision) {
-        log('视觉模式已禁用，使用文本模式（部分文字可能缺失）');
+        if (imageDataUrl) { log('已截取题目图片，视觉AI作答'); }
+        else { log('截图失败，回退到纯文本模式'); }
       }
 
       const answer = await AI.ask(questionText, aiType, imageDataUrl);
@@ -1905,7 +1898,7 @@
                   • <b>qwen-plus</b>：新用户免费额度（100万token），超出后 ¥4/百万token<br>
                   • <b>qwen-vl-plus</b>：¥1.5/千次调用，图片越大消耗越高（建议用 <code style="background:var(--vm-bg3);padding:1px 3px;border-radius:2px">scale:2</code> 平衡速度与质量）<br>
                   • 不想花钱？关闭下方「AI自动答题」即可纯手动<br>
-                  • 视觉费用较高，仅在加密字体页面会自动启用
+                  • 视觉模式默认开启（截图发给AI），正确率更高但费用略高，不想用可在下方关闭
                 </div>
               </div>
             </div>
@@ -2062,17 +2055,13 @@
         log(`题干：${stemText || '(空)'}`);
         if (optionsText) log(`选项：\n${optionsText.trimEnd()}`);
 
-        // 有加密码点 → 直接用 html2canvas 截图发给视觉 AI
+        // 优先视觉模式：截图发给视觉 AI，保留完整题目
         const feat = Store.getFeature();
-        const hasEncSpans = itemBody.querySelector('.xuetangx-com-encrypted-font');
         let imageDataUrl = null;
-        if (hasEncSpans && typeof html2canvas !== 'undefined' && !feat.skipVision) {
-          log('检测到加密字体，截图发给视觉AI...');
+        if (typeof html2canvas !== 'undefined' && !feat.skipVision) {
           imageDataUrl = await AI.captureQuestionImage(itemBody);
-          if (imageDataUrl) log('已截取题目图片');
+          if (imageDataUrl) log('已截取题目图片，视觉AI作答');
           else log('截图失败，回退到纯文本模式');
-        } else if (hasEncSpans && feat.skipVision) {
-          log('视觉模式已禁用，使用文本模式（部分文字可能缺失）');
         }
 
         const answer = await AI.ask(questionText, qType === 'judge' ? 'judge' : qType, imageDataUrl);
